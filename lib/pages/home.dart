@@ -12,8 +12,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    data = ModalRoute.of(context)!.settings.arguments
-        as Map; //gets the routes that were pushed into this page and retrieves the arguments sent when navigating to this page
+    data = data.isNotEmpty
+        ? data
+        : ModalRoute.of(context)!.settings.arguments
+            as Map; //gets the routes that were pushed into this page and retrieves the arguments sent when navigating to this page
     print(data);
     return Scaffold(
       body: SafeArea(
@@ -22,8 +24,16 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
               TextButton.icon(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/location');
+                onPressed: () async {
+                  dynamic result =
+                      await Navigator.pushNamed(context, '/location');
+                  setState(() {
+                    data = {
+                      'time': result['time'],
+                      'location': result['location'],
+                      'flag': result['flag'],
+                    };
+                  });
                 },
                 icon: Icon(Icons.edit_location),
                 label: Text('Edit Location'),
